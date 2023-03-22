@@ -55,14 +55,14 @@ def handle_app_mentions(body, say):
             message = "`[" + customer + "]`"
             if environment:
                 message = message + " `[" + environment + "]`"
-            message = message + " Deployment requested by <@{user}>.\n"
+            message = message + " Deployment requested by <@" + user + ">.\n"
             if datetime:
                 message = message + "It is planned for " + datetime + ".\n"
-            print('DateTime: ' + datetime)
+            print("DateTime: " + datetime)
             if remarks:
                 message = message + "Additional remarks: " + remarks
             target_channel = "#deployments"
-            print('Message: ' + message)
+            print("Message: " + message)
             send_message(target_channel, message)
         else:
             say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
