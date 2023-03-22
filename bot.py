@@ -66,6 +66,32 @@ def handle_app_mentions(body, say):
             send_message(target_channel, message)
         else:
             say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
+
+# Listen for app_mention events
+@app.event("message.im")
+def handle_direct_messages(body, say):
+    text = body["event"].get("text")
+    user = body['event'].get('user')
+    print('User: ' + user)
+    print('Text: ' + text)
+    
+    event_parameters = parse_event_parameters(text)
+    if event_parameters:
+        customer, environment, datetime, remarks = event_parameters
+        message = "`[" + customer + "]`"
+        if environment:
+            message = message + " `[" + environment + "]`"
+        message = message + " Deployment requested by <@" + user + ">.\n"
+        if datetime:
+            message = message + "It is planned for " + datetime + ".\n"
+        print("DateTime: " + datetime)
+        if remarks:
+            message = message + "Additional remarks: " + remarks
+        target_channel = "#deployments"
+        print("Message: " + message)
+        send_message(target_channel, message)
+    else:
+        say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
         
 
 flask_app = Flask(__name__)
