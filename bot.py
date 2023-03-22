@@ -3,10 +3,15 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from slack_bolt.adapter.flask import SlackRequestHandler
+from flask import Flask, request
 
 # Initialize the Slack client with the bot token
 app = App()
 slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
+
+flask_app = Flask(__name__)
+handler = SlackRequestHandler(app)
 
 # Define the message customization function
 def create_custom_message(template, parameters):
@@ -25,6 +30,9 @@ def send_custom_message(channel_id, message_template, parameters):
 # Define the trigger word for your bot
 trigger_word = "!deploy"
 
+@flask_app.route("/slack/events", methods=["POST"])
+def slack_events():
+    return handler.handle(request)
 
 # Listen for app_mention events
 @app.event("app_mention")
