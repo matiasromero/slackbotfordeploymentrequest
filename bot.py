@@ -14,18 +14,26 @@ app = App(token=os.environ.get("SLACK_BOT_TOKEN"), signing_secret=os.environ.get
 
 slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
 
-# Define the message customization function
-def create_custom_message(template, parameters):
-    return template.format(**parameters)
-
 
 # Send the customized message to a channel
-def send_custom_message(channel_id, message_template, parameters):
-    custom_message = create_custom_message(message_template, parameters)
+def send_message(channel_id, message):
     try:
-        slack_client.chat_postMessage(channel=channel_id, text=custom_message)
+        slack_client.chat_postMessage(channel=channel_id, text=message)
     except SlackApiError as e:
         print(f"Error: {e}")
+
+def parse_event_parameters(text):
+    pattern = r"customer:\s*(.*?)\s+environment:\s*(.*?)\s+datetime:\s*(.*?)+remarks:\s*(.*)"
+    match = re.search(pattern, text, re.IGNORECASE)
+
+    if match:
+        customer = match.group(1)
+        environment = match.group(2)
+        datetime = match.group(3)
+        remarks = match.group(4)
+        return customer, environment, datetime, remarks
+
+    return None
 
 # Define the trigger word for your bot
 trigger_word = "!deploy"
@@ -33,17 +41,25 @@ trigger_word = "!deploy"
 @app.event("app_mention")
 def handle_app_mentions(body, say):
     text = body["event"].get("text")
+    user = body['event'].get('user')
+    
     if trigger_word in text:
-        # Customize the message and parameters as needed
-        message_template = "`[{customer}] [{environment}]` Deployment requested.\nDate/Time: {datetime}.\nExtra remarks: {remarks}"
-        parameters = {
-            "customer": "Customer Name",
-            "environment": "Production",
-            "datetime": "2020-01-01 12:00:00",
-            "remarks": "",
-        }
-        target_channel = "#deployments"
-        send_custom_message(target_channel, message_template, parameters)
+        event_parameters = parse_event_parameters(text)
+        if event_parameters:
+            customer, environment, datetime, remarks = event_parameters
+            message = "`[" + customer + "]`"
+            if environment:
+                message = message + " `[" + environment + "]`"
+            message = message + " Deployment requested by <@{user}>.\n"
+            if datetime:
+                message = message + "It is planned for " + datetime + ".\n"
+            if remarks:
+                message = message + "Additional remarks: " + remarks
+            target_channel = "#deployments"
+            send_message(target_channel, message)
+        else:
+            say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
+        
 
 flask_app = Flask(__name__)
 handler = SlackRequestHandler(app)
