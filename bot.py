@@ -3,7 +3,7 @@ from slack_bolt import App
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_bolt.adapter.flask import SlackRequestHandler
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 
 # Load environment variables
@@ -50,6 +50,11 @@ handler = SlackRequestHandler(app)
 @flask_app.route("/slack/events", methods=["POST"])
 def slack_events():
     return handler.handle(request)
+
+@flask_app.route("/slack/events", methods=["GET"])
+def slack_challenge():
+    challenge = request.args.get('challenge')
+    return jsonify({"challenge": challenge})
 
 if __name__ == "__main__":
     flask_app.run(port=3000)
