@@ -9,10 +9,8 @@ from flask import Flask, request, jsonify
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
-app = App(token=os.environ["SLACK_BOT_TOKEN"])
+app = App(token=os.environ.get("SLACK_BOT_TOKEN"), signing_secret=os.environ.get("SLACK_SIGNING_SECRET"))
 
-print("SLACK_BOT_TOKEN:", os.environ.get("SLACK_BOT_TOKEN"))
-print("SLACK_APP_TOKEN:", os.environ.get("SLACK_APP_TOKEN"))
 
 slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
 
