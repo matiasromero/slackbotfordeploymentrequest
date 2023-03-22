@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
-app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
+app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
 slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
 
