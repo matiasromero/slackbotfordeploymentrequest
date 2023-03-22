@@ -56,6 +56,7 @@ def handle_direct_messages(body, say):
             message = message + "It is planned for " + datetime + ".\n"
         if remarks:
             message = message + "Additional remarks: " + remarks
+        print(message)
         target_channel = "#deployments"
         send_message(target_channel, message)
     else:
