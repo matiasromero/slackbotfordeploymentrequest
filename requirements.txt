@@ -1,4 +1,4 @@
 slack-bolt==1.9.1
 slack-sdk==3.11.2
 gunicorn==20.1.0
-Flask==2.1.1
+Flask==2.1.1    
