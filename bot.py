@@ -11,6 +11,9 @@ from dotenv import load_dotenv
 load_dotenv()
 app = App(token=os.environ["SLACK_BOT_TOKEN"])
 
+print("SLACK_BOT_TOKEN:", os.environ.get("SLACK_BOT_TOKEN"))
+print("SLACK_APP_TOKEN:", os.environ.get("SLACK_APP_TOKEN"))
+
 slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
 
 # Define the message customization function
