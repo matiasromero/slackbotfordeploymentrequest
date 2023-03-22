@@ -24,10 +24,8 @@ def send_message(channel_id, message):
         print(f"Error: {e}")
 
 def parse_event_parameters(text):
-    pattern = r"customer:\s*(.*?)\s+environment:\s*(.*?)\s+datetime:\s*(.*?)+remarks:\s*(.*)"
+    pattern = r"customer:\s*(.*?)\s+environment:\s*(.*?)\s+datetime:\s*(.*?)\s+remarks:\s*(.*)\s"
     match = re.search(pattern, text, re.IGNORECASE)
-    print('Match:')
-    print(match)
 
     if match:
         customer = match.group(1)
@@ -40,40 +38,12 @@ def parse_event_parameters(text):
 
 # Define the trigger word for your bot
 trigger_word = "!deploy"
-# Listen for app_mention events
-@app.event("app_mention")
-def handle_app_mentions(body, say):
-    text = body["event"].get("text")
-    user = body['event'].get('user')
-    print('User: ' + user)
-    print('Text: ' + text)
-    
-    if trigger_word in text:
-        event_parameters = parse_event_parameters(text)
-        if event_parameters:
-            customer, environment, datetime, remarks = event_parameters
-            message = "`[" + customer + "]`"
-            if environment:
-                message = message + " `[" + environment + "]`"
-            message = message + " Deployment requested by <@" + user + ">.\n"
-            if datetime:
-                message = message + "It is planned for " + datetime + ".\n"
-            print("DateTime: " + datetime)
-            if remarks:
-                message = message + "Additional remarks: " + remarks
-            target_channel = "#deployments"
-            print("Message: " + message)
-            send_message(target_channel, message)
-        else:
-            say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
 
 # Listen for app_mention events
 @app.event("message")
 def handle_direct_messages(body, say):
     text = body["event"].get("text")
     user = body['event'].get('user')
-    print('User: ' + user)
-    print('Text: ' + text)
     
     event_parameters = parse_event_parameters(text)
     if event_parameters:
@@ -84,11 +54,9 @@ def handle_direct_messages(body, say):
         message = message + " Deployment requested by <@" + user + ">.\n"
         if datetime:
             message = message + "It is planned for " + datetime + ".\n"
-        print("DateTime: " + datetime)
         if remarks:
             message = message + "Additional remarks: " + remarks
         target_channel = "#deployments"
-        print("Message: " + message)
         send_message(target_channel, message)
     else:
         say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
