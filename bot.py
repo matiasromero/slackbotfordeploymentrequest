@@ -37,8 +37,8 @@ def handle_app_mentions(body, say):
         # Customize the message and parameters as needed
         message_template = "`[{customer}] [{environment}]` Deployment requested.\nDate/Time: {datetime}.\nExtra remarks: {remarks}"
         parameters = {
-            "customer": "This is the parameter value",
-            "environment": "production",
+            "customer": "Customer Name",
+            "environment": "Production",
             "datetime": "2020-01-01 12:00:00",
             "remarks": "",
         }
