@@ -68,7 +68,7 @@ def handle_app_mentions(body, say):
             say(f"Sorry <@{user}>, I couldn't understand the event command. Please check the format and try again.")
 
 # Listen for app_mention events
-@app.event("message.im")
+@app.event("message")
 def handle_direct_messages(body, say):
     text = body["event"].get("text")
     user = body['event'].get('user')
